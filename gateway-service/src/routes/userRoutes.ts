@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { getHealthStatus } from '../controllers/userController.js';
+import { registerUser } from '../controllers/userController.js';
 
 const router = Router();
 
-router.get('/health', getHealthStatus);
+router.post('/register', registerUser);
 
 export default router;
