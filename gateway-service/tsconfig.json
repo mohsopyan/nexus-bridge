@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
     "types": ["node"],
+    "allowJs": true,
     "esModuleInterop": true,
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "rootDir": "./src",
+    "rootDir": "./",
     "outDir": "./dist",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipDefaultLibCheck": true,
     "verbatimModuleSyntax": false
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/prisma.config.ts", ".env"],
   "exclude": ["node_modules", "dist"]
 }
