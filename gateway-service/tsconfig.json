@@ -11,7 +11,11 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipDefaultLibCheck": true,
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/@types"
+    ]
   },
   "include": ["src/**/*", "src/prisma.config.ts", ".env"],
   "exclude": ["node_modules", "dist"]
