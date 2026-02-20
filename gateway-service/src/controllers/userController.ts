@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import prisma from "../lib/prisma.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { callPythonAI } from "../services/aiService.js";;
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
@@ -73,3 +74,21 @@ export const loginUser = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const askAI = async (req: Request, res: Response) => {
+  try {
+    const { prompt } = req.body;
+    const userId = (req as any).user.userId;
+
+    const aiResult = await callPythonAI(prompt, userId);
+
+    res.status(200).json({
+      message: "Respon dari AI Engine berhasil didapat",
+      dat: aiResult
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+}

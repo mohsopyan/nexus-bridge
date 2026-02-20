@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { loginUser, registerUser } from '../controllers/userController.js';
+import { loginUser, registerUser, askAI } from '../controllers/userController.js';
 import { authenticateToken } from '../middlewares/authMiddleware.js';
 
 const router = Router();
@@ -12,6 +12,7 @@ router.get("/profile", authenticateToken, (req, res) => {
 })
 
 router.post('/register', registerUser);
-router.post('/login', loginUser)
+router.post('/login', loginUser);
+router.post('/ask-ai', authenticateToken, askAI);
 
 export default router;
