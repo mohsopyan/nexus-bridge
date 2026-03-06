@@ -10,6 +10,10 @@ Nexus-Bridge menggunakan pola **Microservices** dengan alur kerja sebagai beriku
 2. **Engine Service (Python)**: Bertindak sebagai otak komputasi yang terhubung langsung ke Google Gemini AI.
 3. **Database (PostgreSQL)**: Menyimpan data pengguna dan riwayat interaksi AI secara permanen.
 
+## ✨ Key Features
+- **Resilient Error Handling:** Implementasi Fault Tolerance yang mendeteksi kegagalan layanan Engine (HTTP 503) secara elegan tanpa menjatuhkan Gateway.
+- **Usage Analytics:** Perhitungan otomatis total query dan akumulasi jumlah karakter prompt untuk monitoring kuota/biaya API.
+- **Service-Oriented Design:** Pemisahan logika bisnis (Service Layer) untuk skalabilitas kode yang lebih bersih.
 
 
 ## 🛠️ Tech Stack
@@ -49,9 +53,12 @@ Pastikan Docker Desktop berjalan, lalu jalankan PostgreSQL.
 ### AI Service (Protected)
 - `POST /api/v1/user/ask-ai` - Mengirim prompt ke AI Engine & Menyimpan log ke database.
 - `GET /api/v1/user/ai-history` - Mengambil riwayat percakapan AI milik user yang login.
+- `GET /api/v1/user/ai-stats` - Mengambil statistik penggunaan (total query &  total karakter)
 
 ## 📝 Roadmap & Progress
 - [x] Hybrid Connection (Axios Bridge).
 - [x] Gemini LLM Integration.
 - [x] **Phase V: Database Persistence** (Logging interaksi AI).
-- [ ] Phase VI: Analytics Dashboard & Advanced Error Handling.
+- [x] **Phase VI: Advanced Error Handling** (503 Service Unavailable).
+- [x] **Phase VII: User Analytics** (Character & Query Counter).
+- [ ] **Phase VIII: Containerization** (Dockerizing & All Services).

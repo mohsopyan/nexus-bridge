@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { loginUser, registerUser, askAI, getAiHistory } from '../controllers/userController.js';
+import { loginUser, registerUser, askAI, getAiHistory, getAiStats } from '../controllers/userController.js';
 import { authenticateToken } from '../middlewares/authMiddleware.js';
 
 const router = Router();
@@ -15,5 +15,6 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.post('/ask-ai', authenticateToken, askAI);
 router.get('/ai-history', authenticateToken, getAiHistory);
+router.get('/ai-stats', authenticateToken, getAiStats);
 
 export default router;

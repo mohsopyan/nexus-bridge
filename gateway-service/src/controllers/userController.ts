@@ -3,6 +3,7 @@ import prisma from "../lib/prisma.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { callPythonAI } from "../services/aiService.js";
+import * as aiLogService from "../services/aiLog.service.js";
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
@@ -80,6 +81,13 @@ export const askAI = async (req: Request, res: Response) => {
     const { prompt } = req.body;
     const userId = (req as any).user.userId;
 
+    // Validasi input
+    if (!prompt || prompt.trim().length < 3) {
+      return res.status(400).json({
+        message: "Berikan pertanyaan yang lebih jelas."
+      })
+    }
+
     const aiResult = await callPythonAI(prompt, userId);
 
     await prisma.ailog.create({
@@ -96,27 +104,40 @@ export const askAI = async (req: Request, res: Response) => {
       dat: aiResult,
     });
   } catch (error: any) {
+    // error handling
+    console.log("AI Service Error:", error.message);
+
+    if (error.code === 'ECONNREFUSED') {
+      return res.status(503).json({
+        message: "AI Engine sedang sibuk atau tidak aktif"
+      })
+    }
+
     res.status(500).json({
-      message: error.message,
+      message: "Terjadi kesalahan internal pada sistem.",
+      error: error.message
     });
   }
 };
 
 export const getAiHistory = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.userId;
-
-    const history = await prisma.ailog.findMany({
-      where: { userId: userId },
-      orderBy: { createdAt: "desc" },
-    });
-
-    res.status(200).json({
-      message: "Riwayat chat berhasil diambil",
-      count: history.length,
-      data: history,
-    });
+    const data = await aiLogService.fetchUserHistroy((req as any).user.userId);
+    res.status(200).json({ message: "Riwayat berhasil diambil", data });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAiStats = async (req: Request, res: Response) => {
+  try {
+    const stats = await aiLogService.fetchUserStats((req as any).user.userId);
+    res.status(200).json({
+      message: "Statistik berhasil diambil", stats
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      message: error.message
+    });
   }
 };
