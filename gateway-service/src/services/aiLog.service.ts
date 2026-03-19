@@ -1,7 +1,7 @@
 import prisma from "../lib/prisma.js";
 
 export const fetchUserHistroy = async (userId: string) => {
-  return await prisma.ailog.findMany({
+  return await prisma.aiLog.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
   });
@@ -9,19 +9,19 @@ export const fetchUserHistroy = async (userId: string) => {
 
 export const fetchUserStats = async (userId: string) => {
   const [totalRequests, lastActivity, allLogs] = await Promise.all([
-    prisma.ailog.count({ where: { userId } }),
-    prisma.ailog.findFirst({
+    prisma.aiLog.count({ where: { userId } }),
+    prisma.aiLog.findFirst({
       where: { userId },
       orderBy: { createdAt: "desc" },
       select: { createdAt: true },
     }),
-    prisma.ailog.findMany({
+    prisma.aiLog.findMany({
       where: { userId },
       select: { prompt: true },
     }),
   ]);
 
-  const totalCharacters = allLogs.reduce((sum, log) => sum + log.prompt.length, 0);
+  const totalCharacters = allLogs.reduce((sum: number, log: any) => sum + log.prompt.length, 0);
 
   return {
     total_queries: totalRequests,

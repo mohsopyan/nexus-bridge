@@ -1,6 +1,42 @@
-node_module/
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Environments
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Python
 venv/
-dist/
+env/
+ENV/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# TypeScript / Build output
+dist/
+out/
+build/
+*.tsbuildinfo
+# Prisma Generated Client
+node_modules/.prisma/
+
+# IDE / Editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

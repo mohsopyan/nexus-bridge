@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # 1. DATABASE SERVICE
+  db:
+    image: postgres:15-alpine
+    container_name: nexus-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. PYTHON ENGINE SERVICE
+  engine-service:
+    build: ./engine-service
+    container_name: nexus-engine
+    restart: always
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  # 3. NODE.JS GATEWAY SERVICE
+  gateway-service:
+    build: ./gateway-service
+    container_name: nexus-gateway
+    restart: always
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - PYTHON_ENGINE_URL=http://engine-service:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - engine-service
+
+volumes:
+  postgres_data:

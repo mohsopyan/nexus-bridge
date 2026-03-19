@@ -10,6 +10,12 @@ Nexus-Bridge menggunakan pola **Microservices** dengan alur kerja sebagai beriku
 2. **Engine Service (Python)**: Bertindak sebagai otak komputasi yang terhubung langsung ke Google Gemini AI.
 3. **Database (PostgreSQL)**: Menyimpan data pengguna dan riwayat interaksi AI secara permanen.
 
+### 🌐 Service Networking (Docker)
+Dalam lingkungan kontainer, layanan berkomunikasi menggunakan **Internal DNS**:
+- **Gateway** memanggil Engine melalui: `http://engine-service:8000`
+- **Gateway** memanggil Database melalui: `postgresql://db:5432`
+- **Engine** memanggil Google Gemini Cloud via HTTPS.
+
 ## ✨ Key Features
 - **Resilient Error Handling:** Implementasi Fault Tolerance yang mendeteksi kegagalan layanan Engine (HTTP 503) secara elegan tanpa menjatuhkan Gateway.
 - **Usage Analytics:** Perhitungan otomatis total query dan akumulasi jumlah karakter prompt untuk monitoring kuota/biaya API.
@@ -26,24 +32,26 @@ Nexus-Bridge menggunakan pola **Microservices** dengan alur kerja sebagai beriku
 
 ## 🚦 Getting Started
 
-### 1. Database Setup (Docker)
-Pastikan Docker Desktop berjalan, lalu jalankan PostgreSQL.
+### Database Setup (Docker)
+Pastikan Docker Desktop sudah berjalan di sistem Anda. Cukup satu perintah untuk menjalankan seluruh ekosistem (Database, Python Engine, & Node.js Gateway):
 
-### 2. Engine Service (Python)
-1. `cd engine-service`
-2. Aktifkan venv: `.\venv\Scripts\activate`
-3. Install dependencies: `pip install fastapi uvicorn google-generativeai python-dotenv`
-4. Buat `.env` dan tambahkan `GEMINI_API_KEY=your_key`
-5. Jalankan: `uvicorn main:app --reload --port 8000`
+1. Clone repositori ini.
+2. Buat file `.env` di root folder (lihat `.env.example`).
+3. Jalankan perintah:
+```bash
+docker compose up -d --build
+```
 
-### 3. Gateway Service (Node.js)
-1. `cd gateway-service`
-2. `npm install`
-3. Sesuaikan `.env` (`DATABASE_URL`, `JWT_SECRET`, `ENGINE_URL`).
-4. **Prisma Sync**: 
-   - Karena menggunakan Prisma 7 + Driver Adapter, gunakan flag URL untuk migrasi:
-   - `npx prisma migrate dev --url="your_postgresql_url"`
-5. Run development: `npm run dev` (Port 3000).
+## 🛠️ Manual Setup (Development Mode)
+### 1. Engine Service(Python)
+- ``` cd engine-service ```
+- Install dependencies: ``` pip install -r requirements.txt ```
+- Jalankan: ``` uvicorn main:app --reload --port 8000 ```
+
+### 2. Gateway Servcie(Node.js)
+- ```cd gateway-service```
+-```npm install```
+- Sync Database: ```npx prisma migrate dev```
 
 ## 📡 API Endpoints (v1)
 ### User & Auth
@@ -61,4 +69,5 @@ Pastikan Docker Desktop berjalan, lalu jalankan PostgreSQL.
 - [x] **Phase V: Database Persistence** (Logging interaksi AI).
 - [x] **Phase VI: Advanced Error Handling** (503 Service Unavailable).
 - [x] **Phase VII: User Analytics** (Character & Query Counter).
-- [ ] **Phase VIII: Containerization** (Dockerizing & All Services).
+- [x] **Phase VIII: Containerization** (Dockerizing & All Services).
+- [ ] **Phase IX: API Documentation** (Swagger/OpenAPI Integration).

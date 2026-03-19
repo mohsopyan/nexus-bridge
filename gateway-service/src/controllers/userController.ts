@@ -90,7 +90,7 @@ export const askAI = async (req: Request, res: Response) => {
 
     const aiResult = await callPythonAI(prompt, userId);
 
-    await prisma.ailog.create({
+    await prisma.aiLog.create({
       data: {
         prompt: prompt,
         aiResponse: aiResult.ai_response,
@@ -101,7 +101,7 @@ export const askAI = async (req: Request, res: Response) => {
 
     res.status(200).json({
       message: "Respon dari AI Engine berhasil didapat dan disimpan keriwayat",
-      dat: aiResult,
+      data: aiResult,
     });
   } catch (error: any) {
     // error handling
