@@ -131,10 +131,27 @@ export const getAiHistory = async (req: Request, res: Response) => {
 
 export const getAiStats = async (req: Request, res: Response) => {
   try {
-    const stats = await aiLogService.fetchUserStats((req as any).user.userId);
+    const userId = (req as any).user.userId;
+
+    // 1. Jalankan query secara paralel agar lebih efisien
+    const [userAiStats, totalUserCount] = await Promise.all([
+      aiLogService.fetchUserStats(userId),
+      prisma.user.count() // Mengambil jumlah user asli dari DB
+    ]);
+
+    // 2. Gabungkan data dari Service dan Prisma
+    const statsResponse = {
+      ...userAiStats,           // Ini berisi total_queries & total_prompt_chars dari service
+      total_users: totalUserCount,
+      dataset_size: "1.2 TB",    // Sementara hardcoded atau bisa dihitung dari table vector
+      last_active: new Date().toISOString()
+    };
+
     res.status(200).json({
-      message: "Statistik berhasil diambil", stats
+      message: "Statistik berhasil diambil",
+      stats: statsResponse // Pastikan dibungkus dalam properti 'stats' agar sinkron dengan Frontend
     });
+
   } catch (error: any) {
     res.status(500).json({
       message: error.message

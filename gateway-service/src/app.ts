@@ -10,7 +10,12 @@ const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3001", // Izinkan Dashboard Anda
+  credentials: true,                // Penting agar Cookie/Auth bisa lewat
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 // Middleware agar server bisa membaca json
 app.use(express.json({ limit: "10kb" }));
