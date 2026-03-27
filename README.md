@@ -20,6 +20,7 @@ Dalam lingkungan kontainer, layanan berkomunikasi menggunakan **Internal DNS**:
 - **Resilient Error Handling:** Implementasi Fault Tolerance yang mendeteksi kegagalan layanan Engine (HTTP 503) secara elegan tanpa menjatuhkan Gateway.
 - **Usage Analytics:** Perhitungan otomatis total query dan akumulasi jumlah karakter prompt untuk monitoring kuota/biaya API.
 - **Service-Oriented Design:** Pemisahan logika bisnis (Service Layer) untuk skalabilitas kode yang lebih bersih.
+- **Operational Audit Trail:** Sistem logging mendalam yang mencatat Model AI yang digunakan, User ID, Prompt, Response, hingga Latency (ms) untuk kontrol kualitas.
 
 
 ## 🛠️ Tech Stack
@@ -60,7 +61,7 @@ docker compose up -d --build
 
 ### AI Service (Protected)
 - `POST /api/v1/user/ask-ai` - Mengirim prompt ke AI Engine & Menyimpan log ke database.
-- `GET /api/v1/user/ai-history` - Mengambil riwayat percakapan AI milik user yang login.
+- `GET /api/v1/user/ai-history` - Mengambil riwayat percakapan AI milik user yang login dengan fitur filter & search (Audit Ready).
 - `GET /api/v1/user/ai-stats` - Mengambil statistik penggunaan (total query &  total karakter)
 
 ## 📝 Roadmap & Progress
@@ -70,4 +71,4 @@ docker compose up -d --build
 - [x] **Phase VI: Advanced Error Handling** (503 Service Unavailable).
 - [x] **Phase VII: User Analytics** (Character & Query Counter).
 - [x] **Phase VIII: Containerization** (Dockerizing & All Services).
-- [ ] **Phase IX: API Documentation** (Swagger/OpenAPI Integration).
+- [x] **Phase IX: Operational Audit System** (Latency tracking & Searchable logs).
