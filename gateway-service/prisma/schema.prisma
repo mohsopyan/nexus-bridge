@@ -23,6 +23,7 @@ model AiLog {
   prompt String @db.Text
   aiResponse String @db.Text
   modelUsed String
+  latency Int @default(0)
   userId String 
   user User @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())

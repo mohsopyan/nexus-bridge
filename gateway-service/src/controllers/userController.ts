@@ -96,6 +96,7 @@ export const askAI = async (req: Request, res: Response) => {
         aiResponse: aiResult.ai_response,
         modelUsed: aiResult.model_used || "gemini-pro",
         userId: userId,
+        latency: aiResult.latency,
       },
     });
 
@@ -122,10 +123,26 @@ export const askAI = async (req: Request, res: Response) => {
 
 export const getAiHistory = async (req: Request, res: Response) => {
   try {
-    const data = await aiLogService.fetchUserHistroy((req as any).user.userId);
-    res.status(200).json({ message: "Riwayat berhasil diambil", data });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized: User payload missing" })
+    }
+    const userId = req.user.userId;
+    const { page, limit, search, model } = req.query;
+
+    const history = await aiLogService.fetchUserHistroy(
+      userId,
+      Number(page) || 1,
+      Number(limit) || 10,
+      String(search || ""),
+      String(model || "")
+    );
+
+    res.status(200).json({
+      success: true,
+      data: history
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch audit logs" });
   }
 };
 
@@ -133,18 +150,19 @@ export const getAiStats = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
 
-    // 1. Jalankan query secara paralel agar lebih efisien
-    const [userAiStats, totalUserCount] = await Promise.all([
+    const [userAiStats, totalUserCount, dailyTrend] = await Promise.all([
       aiLogService.fetchUserStats(userId),
-      prisma.user.count() // Mengambil jumlah user asli dari DB
+      prisma.user.count(), // Mengambil jumlah user asli dari DB
+      aiLogService.fetchDailyAnalytics(userId)
     ]);
 
-    // 2. Gabungkan data dari Service dan Prisma
+    // Gabungkan data dari Service dan Prisma
     const statsResponse = {
-      ...userAiStats,           // Ini berisi total_queries & total_prompt_chars dari service
+      ...userAiStats,
       total_users: totalUserCount,
       dataset_size: "1.2 TB",    // Sementara hardcoded atau bisa dihitung dari table vector
-      last_active: new Date().toISOString()
+      last_active: new Date().toISOString(),
+      dailyTrend: dailyTrend
     };
 
     res.status(200).json({
